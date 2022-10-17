@@ -1,3 +1,3 @@
-const { CapabilityCodes } = require('@moneybutton/paymail-client')
+const { CapabilityCodes } = require("paymail-client");
 
-module.exports = { CapabilityCodes }
+module.exports = { CapabilityCodes };

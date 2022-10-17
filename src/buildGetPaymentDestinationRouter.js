@@ -1,67 +1,70 @@
-const express = require('express')
-const asyncHandler = require('express-async-handler')
-const { PaymailError } = require('./errors/PaymailError')
-const HttpStatus = require('http-status-codes')
-const helpers = require('./script-helpers')
-const { VerifiableMessage } = require('@moneybutton/paymail-client')
-const { checkContentType } = require('./middlewares')
+const express = require("express");
+const asyncHandler = require("express-async-handler");
+const { PaymailError } = require("./errors/PaymailError");
+const HttpStatus = require("http-status-codes");
+const helpers = require("./script-helpers");
+const { VerifiableMessage } = require("paymail-client");
+const { checkContentType } = require("./middlewares");
 
-const HANDLE_VALIDATION_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+const HANDLE_VALIDATION_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 const validateSignature = async (paymailClient, params) => {
-  const message = VerifiableMessage.forBasicAddressResolution(
-    {
-      senderHandle: params.senderHandle,
-      dt: params.dt,
-      amount: params.amount,
-      purpose: params.purpose
-    }
-  )
+  const message = VerifiableMessage.forBasicAddressResolution({
+    senderHandle: params.senderHandle,
+    dt: params.dt,
+    amount: params.amount,
+    purpose: params.purpose,
+  });
 
-  if (!await paymailClient.isValidSignature(message, params.signature, params.senderHandle, params.pubkey)) {
-    throw new PaymailError('Wrong signature', HttpStatus.BAD_REQUEST, 'bad-signature')
+  if (!(await paymailClient.isValidSignature(message, params.signature, params.senderHandle, params.pubkey))) {
+    throw new PaymailError("Wrong signature", HttpStatus.BAD_REQUEST, "bad-signature");
   }
-}
+};
 
 const validateRequest = async (params, paymailClient, checkSignature) => {
   if (!params.senderHandle) {
-    throw new PaymailError('Missing sender handle', HttpStatus.BAD_REQUEST, 'missing-sender-handle')
+    throw new PaymailError("Missing sender handle", HttpStatus.BAD_REQUEST, "missing-sender-handle");
   }
   if (!HANDLE_VALIDATION_REGEX.test(params.senderHandle)) {
-    throw new PaymailError('Invalid sender handle', HttpStatus.BAD_REQUEST, 'invalid-sender-handle')
+    throw new PaymailError("Invalid sender handle", HttpStatus.BAD_REQUEST, "invalid-sender-handle");
   }
   if (!params.dt) {
-    throw new PaymailError('Missing parameter dt', HttpStatus.BAD_REQUEST, 'missing-dt')
+    throw new PaymailError("Missing parameter dt", HttpStatus.BAD_REQUEST, "missing-dt");
   }
   if (checkSignature) {
     if (!params.signature) {
-      throw new PaymailError('Missing signature', HttpStatus.BAD_REQUEST, 'missing-signature')
+      throw new PaymailError("Missing signature", HttpStatus.BAD_REQUEST, "missing-signature");
     }
 
-    await validateSignature(paymailClient, params)
+    await validateSignature(paymailClient, params);
   }
-}
+};
 
 const buildGetPaymentDestinationRouter = (config, ifPresent) => {
   if (config.getPaymentDestination) {
-    const router = express.Router()
-    router.post('/address/:paymail', checkContentType, asyncHandler(async (req, res) => {
-      const [name, domain] = req.params.paymail.split('@')
-      const validateSignature = config.requestSenderValidation
-      await validateRequest(req.body, config.paymailClient, validateSignature)
-      const output = await config.getPaymentDestination(name, domain, req.body, helpers)
+    const router = express.Router();
+    router.post(
+      "/address/:paymail",
+      checkContentType,
+      asyncHandler(async (req, res) => {
+        const [name, domain] = req.params.paymail.split("@");
+        const validateSignature = config.requestSenderValidation;
+        await validateRequest(req.body, config.paymailClient, validateSignature);
+        const output = await config.getPaymentDestination(name, domain, req.body, helpers);
 
-      if (!output) {
-        throw new PaymailError(`Paymail not found: ${req.params.paymail}`, HttpStatus.NOT_FOUND, 'not-found')
-      }
+        if (!output) {
+          throw new PaymailError(`Paymail not found: ${req.params.paymail}`, HttpStatus.NOT_FOUND, "not-found");
+        }
 
-      res.send({
-        output
+        res.send({
+          output,
+        });
       })
-    }))
+    );
 
-    ifPresent(router)
+    ifPresent(router);
   }
-}
+};
 
-module.exports = { buildGetPaymentDestinationRouter }
+module.exports = { buildGetPaymentDestinationRouter };

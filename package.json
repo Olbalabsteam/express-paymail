@@ -13,7 +13,7 @@
   "license": "Open-BSV",
   "dependencies": {
     "paymail-client": "github:mkpuig/paymail-client",
-    "body-parser": "1.18.3",
+    "body-parser": "1.20.1",
     "bsv": "2.0.7",
     "cors": "2.8.5",
     "express": "4.17.3",

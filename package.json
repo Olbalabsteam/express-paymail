@@ -12,23 +12,23 @@
   "author": "Fermatted Drives Limited",
   "license": "Open-BSV",
   "dependencies": {
-    "paymail-client": "github:mkpuig/paymail-client",
     "body-parser": "1.20.1",
     "bsv": "2.0.7",
     "cors": "2.8.5",
-    "express": "4.18.2",
+    "express": "^4.19.2",
     "express-async-handler": "1.1.3",
     "http-status-codes": "1.3.0",
-    "node-fetch": "^2.6.7",
     "moment": "^2.29.0",
+    "node-fetch": "^2.6.7",
+    "paymail-client": "github:Olbalabsteam/paymail-client",
     "url-join": "4.0.0"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.12.1",
     "@babel/register": "^7.18.9",
-    "bdd-lazy-var": "2.5.1",
+    "bdd-lazy-var": "^2.6.1",
     "component-emitter": "1.2.1",
-    "mocha": "6.2.3",
+    "mocha": "^10.4.0",
     "sinon": "5.0.10",
     "standard": "12.0.1",
     "supertest": "3.1.0"

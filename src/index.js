@@ -12,7 +12,6 @@ const { buildP2pPaymentDestinationTokenRouter } = require("./buildP2pPaymentDest
 const { errorHandler } = require("./error-handler");
 const { PaymailClient } = require("paymail-client");
 const dns = require("dns");
-const fetch = require("node-fetch");
 const urljoin = require("url-join");
 const { URL } = require("url");
 const { CapabilityCodes } = require("./constants");

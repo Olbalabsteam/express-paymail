@@ -19,7 +19,6 @@
     "express-async-handler": "1.1.3",
     "http-status-codes": "1.3.0",
     "moment": "^2.29.0",
-    "node-fetch": "^2.6.7",
     "paymail-client": "github:Olbalabsteam/paymail-client",
     "url-join": "4.0.0"
   },
